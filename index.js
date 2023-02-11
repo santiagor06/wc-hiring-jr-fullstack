@@ -8,7 +8,7 @@ However, if you have any questions, please send us an email
 to support@webcat.app with the subject "Jr Fullstack Test Questions"
 */
 
-import $t from './libs/test.js'
+import $t from "./libs/test.js";
 
 /*
 1. Data manipulation:
@@ -33,12 +33,38 @@ import $t from './libs/test.js'
   Hint: Use native array methods as well as
     Lodash(https://lodash.com/docs) modules.
 */
-import _ from 'lodash'
-const source = $t.source(1)
-$t.answer(1, async () => {
+
+import _ from "lodash";
+const source = $t.source(1);
+
+$t.answer(1, async (param = source) => {
+  const target = {
+    balance: 0,
+    income: 0,
+    expenses: 0,
+    byCategories: {
+      Restaurants: 0,
+      Income: 0,
+      Groceries: 0,
+      Rent: 0,
+    },
+  };
   // Your code goes here
-  return 
-})
+
+  for (let obj of param) {
+    if (obj.type === "expense") {
+      target.expenses = target.expenses + obj.amount;
+      target.byCategories[obj.category] =
+        target.byCategories[obj.category] - obj.amount;
+    } else {
+      target.income = target.income + obj.amount;
+      target.byCategories[obj.category] =
+        target.byCategories[obj.category] + obj.amount;
+    }
+  }
+  target.balance = target.income - target.expenses;
+  return target;
+});
 
 /*
 2. Asynchronous programming: 
@@ -47,11 +73,19 @@ $t.answer(1, async () => {
   3. Finally, return the list of resulting texts as an array.
     
 */
-const $source = $t.source(2)
-$t.answer(2, async () => {
-    // Your code goes here:
-    // 1. Get ids: $source.getIds()
-    // 2. Get text for every id: $source.getText(id)
-    // 3. Return array of texts
-    return 
-})
+const $source = $t.source(2);
+$t.answer(2, async (param = $source) => {
+  const ids = await param.getIds();
+  const textByIds = Promise.all(
+    ids.map((id) => {
+      const text = param.getText(id);
+      return text;
+    })
+  );
+
+  // Your code goes here:
+  // 1. Get ids: $source.getIds()
+  // 2. Get text for every id: $source.getText(id)
+  // 3. Return array of texts
+  return textByIds;
+});
